@@ -1,11 +1,8 @@
 package xpug.kata.birthday_greetings;
 
 import static spark.Spark.*;
-
 import java.util.Iterator;
-
 import org.junit.Before;
-
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
 
@@ -20,10 +17,10 @@ public class Main {
 			String from = request.queryParams("from");
 			String subject = request.queryParams("subject");
 			String body = request.queryParams("body");
-			BirthdayService service = new BirthdayService();
 			EmployeeRepository employeeRepository = new FileEmployeeRepository("employee_data.txt");
 			EmailService mail = new SMTPMailService("localhost", 1081);
-			service.sendGreetings(employeeRepository, new OurDate("2008/10/08"), mail);
+			BirthdayService service = new BirthdayService(employeeRepository,mail);
+			service.sendGreetings(new OurDate("2008/10/08"));
 			server.stop();
 			return "<h2>Emails sent: "+service.quantityOfGreetingsSent()+"</h2>";
 		});

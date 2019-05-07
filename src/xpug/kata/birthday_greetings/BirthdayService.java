@@ -18,13 +18,20 @@ import javax.mail.internet.MimeMessage;
 public class BirthdayService {
 	
 	int numberOfGreetingsSent;
+	EmployeeRepository employeeRepository;
+	EmailService mail;
+	
+	public BirthdayService(EmployeeRepository employeeRepository,EmailService mail) {
+		this.employeeRepository = employeeRepository;
+		this.mail = mail;
+	}
 
-	public void sendGreetings(EmployeeRepository employeeRepository, OurDate ourDate, EmailService mail) throws IOException, ParseException, AddressException, MessagingException {
+	public void sendGreetings(OurDate ourDate) throws IOException, ParseException, AddressException, MessagingException {
 		numberOfGreetingsSent = 0;
-		ArrayList<Employee> employees = employeeRepository.getEmployees();
+		ArrayList<Employee> employees = this.employeeRepository.getEmployees();
 		for(int i=0;i<employees.size();i++) {
 			if (employees.get(i).isBirthday(ourDate)) {
-				mail.sendMessage("sender@here.com", employees.get(i));
+				this.mail.sendMessage("sender@here.com", employees.get(i));
 				numberOfGreetingsSent++;
 			}	
 		}
@@ -33,9 +40,9 @@ public class BirthdayService {
 	public static void main(String[] args) {
 		EmailService mail = new SMTPMailService("localhost", 25); 
 		EmployeeRepository employeeRepository = new FileEmployeeRepository("employee_data.txt");
-		BirthdayService service = new BirthdayService();
+		BirthdayService service = new BirthdayService(employeeRepository,mail);
 		try {
-			service.sendGreetings(employeeRepository,new OurDate("2008/10/08"), mail);
+			service.sendGreetings(new OurDate("2008/10/08"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
